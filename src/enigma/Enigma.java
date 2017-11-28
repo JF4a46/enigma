@@ -1,18 +1,25 @@
 package enigma;
 
+import java.util.ArrayList;
+
 public class Enigma {
 
-	char[] alphabet = new char[26];
-	int[][] rotors = new int[7][26];
-
-	int[] order = new int[3];
+	private ArrayList<Character> alphabet = new ArrayList<Character>();
+	private int[][] rotors = new int[7][26];
+	private int[] path = new int[8];
+	private int[] order = new int[3];
 	// true == right
-	boolean[] clockwise = new boolean[3];
-	int mouvementCount = 0;
-	int rotorCount = 0;
+	private boolean[] clockwise = new boolean[3];
+	private int mouvementCount = 0;
+	private int rotorCount = 0;
+	private boolean keyInitialized = false;
 
 	public void setOrder(int[] order) {
 		this.order = order;
+	}
+
+	public void keyInit() {
+		keyInitialized = true;
 	}
 
 	public void setClockwise(boolean[] clockwise) {
@@ -33,7 +40,11 @@ public class Enigma {
 		}
 	}
 
-	public char[] getAlphabet() {
+	public int[] getPath() {
+		return path;
+	}
+
+	public ArrayList<Character> getAlphabet() {
 		return alphabet;
 	}
 
@@ -41,14 +52,25 @@ public class Enigma {
 		return rotors;
 	}
 
-	public void encrypt() {
-		/*
-		 * int cel = alphabet.get('a'); cel = mod26(wheelOneFirst[cel] + cel); cel =
-		 * mod26(wheelTwoFirst[cel] + cel); cel = mod26(wheelThreeFirst[cel] + cel); cel
-		 * = mod26(reflector[cel] + cel); cel = mod26(wheelThreeSecond[cel] + cel); cel
-		 * = mod26(wheelTwoSecond[cel] + cel); cel = mod26(wheelOneSecond[cel] + cel);
-		 * System.out.println((char) (cel + 97));
-		 */
+	public String encrypt(char car) {
+
+		int cel = alphabet.indexOf(car);
+		path[0] = cel;
+		cel = mod(rotors[0][cel] + cel, 26);
+		path[1] = cel;
+		cel = mod(rotors[2][cel] + cel, 26);
+		path[2] = cel;
+		cel = mod(rotors[4][cel] + cel, 26);
+		path[3] = cel;
+		cel = mod(rotors[6][cel] + cel, 26);
+		path[4] = cel;
+		cel = mod(rotors[5][cel] + cel, 26);
+		path[5] = cel;
+		cel = mod(rotors[3][cel] + cel, 26);
+		path[6] = cel;
+		cel = mod(rotors[1][cel] + cel, 26);
+		path[7] = cel;
+		return "" + (char) (cel + 97);
 	}
 
 	public int intToRotorNumber(int index) {
@@ -74,22 +96,21 @@ public class Enigma {
 
 	public void rotorNormalMovement() {
 
-		if (mouvementCount >= 26) {
-			mouvementCount = 0;
-			rotorCount++;
+		if (keyInitialized) {
+			if (mouvementCount >= 26) {
+				mouvementCount = 0;
+				rotorCount++;
+			}
+			if (rotorCount >= 3) {
+				rotorCount = 0;
+			}
+			int rotorNumber = order[rotorCount];
+			if (clockwise[rotorCount]) {
+				rotateTabRight(intToRotorNumber(rotorNumber), 1);
+			} else
+				rotateTabLeft(intToRotorNumber(rotorNumber), 1);
+			mouvementCount++;
 		}
-
-		if (rotorCount >= 3) {
-			rotorCount = 0;
-		}
-		int rotorNumber = order[rotorCount];
-		System.out.println(rotorNumber);
-		if (clockwise[rotorCount]) {
-			rotateTabRight(intToRotorNumber(rotorNumber), 1);
-		} else
-			rotateTabLeft(intToRotorNumber(rotorNumber), 1);
-
-		mouvementCount++;
 	}
 
 	public void rotateTabRight(int rotorSelect, int offset) {
@@ -139,8 +160,9 @@ public class Enigma {
 		for (int i = 0, j = 25; i < reflector.length; i++, j -= 2) {
 			reflector[i] = j;
 			char letter = (char) (i + 97);
-			alphabet[i] = letter;
-
+			alphabet.add(letter);
+			mouvementCount = 0;
+			rotorCount = 0;
 			rotors[0] = wheelOneFirst;
 			rotors[1] = wheelOneSecond;
 			rotors[2] = wheelTwoFirst;

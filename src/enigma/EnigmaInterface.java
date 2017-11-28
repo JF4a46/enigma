@@ -1,6 +1,7 @@
 package enigma;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -21,6 +22,13 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 	JTextArea zoneClaire = new JTextArea();
 	JTextArea zoneChiffre = new JTextArea();
 	JButton[] interfaces = new JButton[4];
+	JLabel mode = new JLabel("Mode : Aucun");
+	String messageClear;
+	String messageEnc;
+	boolean encryption;
+	boolean first = true;
+	int pointeurStr = 0;
+	int limitStr;
 
 	public EnigmaInterface() {
 		setUI();
@@ -28,9 +36,12 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 	}
 
 	private void setUI() {
+		mode.setBounds(70, 400, 120, 30);
+		mode.setFont(new Font("TimesRoman", Font.PLAIN, 18));
+		add(mode);
 		setLayout(null);
 		String[] buttonNames = { "Configurer Rotors", "Encrypter", "Etape Suivante", "Decrypter" };
-		String[] names = { "Réflecteur", "Roteur 3", "Roteur 2", "Roteur 1" };
+		String[] names = { "Reflecteur", "Roteur 3", "Roteur 2", "Roteur 1" };
 		JLabel[] etiquettes = new JLabel[5];
 
 		for (int i = 0; i < etiquettes.length - 1; i++) {
@@ -60,7 +71,7 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 		}
 
 		getContentPane().setBackground(Color.GRAY);
-		etiquettes[4] = new JLabel("Clé");
+		etiquettes[4] = new JLabel("Cle");
 		etiquettes[4].setBounds(250, 400, 80, 25);
 		add(etiquettes[4]);
 		zoneClaire.setBounds(100, 450, 300, 100);
@@ -76,16 +87,18 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 				add(roteurs[i][j]);
 			}
 		}
-		char[] alphabet = enig.getAlphabet();
+
 		for (int i = 0; i < alphabet.length; i++) {
-			this.alphabet[i] = new JTextArea("" + alphabet[i]);
+			this.alphabet[i] = new JTextArea("" + (char) (i + 97));
 			this.alphabet[i].setBounds(100 + 30 * i, 310, 20, 20);
+			this.alphabet[i].setEditable(false);
 			add(this.alphabet[i]);
 		}
 
 		setSize(900, 750);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		roteurs[3][0].setForeground(Color.BLUE);
 	}
 
 	private void setDataUI() {
@@ -113,18 +126,79 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 
 		if (e.getSource() == interfaces[0]) {
 			parseKey();
-
+			enig.keyInit();
 		} else if (e.getSource() == interfaces[1]) {
-
+			encrypt();
 		} else if (e.getSource() == interfaces[2]) {
 			etapeSuivante();
 		} else if (e.getSource() == interfaces[3]) {
+			decrypt();
 		}
 	}
 
-	private void etapeSuivante() {
-		enig.rotorNormalMovement();
+	private void decrypt() {
+		mode.setText("Mode : Decrypt");
+		mode.setForeground(Color.GREEN);
+		zoneClaire.setText("");
+		parseKey();
+		encryption = false;
+		pointeurStr = 0;
 		setDataUI();
+	}
+
+	private void encrypt() {
+		mode.setText("Mode : Encrypt");
+		mode.setForeground(Color.RED);
+		zoneChiffre.setText("");
+		parseKey();
+		encryption = true;
+		pointeurStr = 0;
+		setDataUI();
+	}
+
+	
+	private void setColor() {
+		
+		
+	}
+	
+	private void etapeSuivante() {
+		setDataUI();
+		
+		if (first)
+			removeProblems();
+		
+
+		if (encryption) {
+			if (pointeurStr < zoneClaire.getText().length())
+				zoneChiffre.setText(zoneChiffre.getText() + enig.encrypt(zoneClaire.getText().charAt(pointeurStr)));
+			else {
+				avertissement();
+				return;
+			}
+		} else {
+			if (pointeurStr < zoneChiffre.getText().length())
+				zoneClaire.setText(zoneClaire.getText() + enig.encrypt(zoneChiffre.getText().charAt(pointeurStr)));
+			else {
+				avertissement();
+				return;
+			}
+		}
+		pointeurStr++;
+		enig.rotorNormalMovement();
+		
+	}
+
+	private void avertissement() {
+		System.out.println("fin string");
+	}
+
+	private void removeProblems() {
+		first = false;
+		zoneChiffre.setText(zoneChiffre.getText().replaceAll(" ", ""));
+		zoneChiffre.setText(zoneChiffre.getText().toLowerCase());
+		zoneClaire.setText(zoneClaire.getText().replaceAll(" ", ""));
+		zoneClaire.setText(zoneClaire.getText().toLowerCase());
 	}
 
 	private void parseKey() {
@@ -141,8 +215,10 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 				sensD[compteur] = true;
 			} else if (cle[i + 1].getText().charAt(0) == 'g' || cle[i + 1].getText().charAt(0) == 'G') {
 				sensD[compteur] = false;
-			} else
-				System.err.println("Erreur direction rotation");
+			} else {
+				System.err.println("Erreur direction rotation, corriger svp");
+				return;
+			}
 			initOffset[compteur] = Integer.parseInt(cle[i + 2].getText());
 			compteur++;
 		}
@@ -155,7 +231,7 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 			if (initOffset[i] > 0) {
 				enig.rotateTabRight(selector, initOffset[i]);
 			} else if (initOffset[i] < 0) {
-				enig.rotateTabLeft(selector, initOffset[i]);
+				enig.rotateTabLeft(selector, Math.abs(initOffset[i]));
 			}
 		}
 		setDataUI();
