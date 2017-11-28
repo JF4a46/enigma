@@ -56,23 +56,26 @@ public class Enigma {
 
 		int cel = alphabet.indexOf(car);
 		path[0] = cel;
-		cel = mod(rotors[0][cel] + cel, 26);
 		path[1] = cel;
-		cel = mod(rotors[2][cel] + cel, 26);
+		cel = mod(rotors[0][cel] + cel, 26);
 		path[2] = cel;
-		cel = mod(rotors[4][cel] + cel, 26);
+		cel = mod(rotors[2][cel] + cel, 26);
 		path[3] = cel;
-		cel = mod(rotors[6][cel] + cel, 26);
+		cel = mod(rotors[4][cel] + cel, 26);
 		path[4] = cel;
-		cel = mod(rotors[5][cel] + cel, 26);
+		cel = mod(rotors[6][cel] + cel, 26);
 		path[5] = cel;
-		cel = mod(rotors[3][cel] + cel, 26);
+		cel = mod(rotors[5][cel] + cel, 26);
 		path[6] = cel;
-		cel = mod(rotors[1][cel] + cel, 26);
+		cel = mod(rotors[3][cel] + cel, 26);
 		path[7] = cel;
+		cel = mod(rotors[1][cel] + cel, 26);
+		
 		return "" + (char) (cel + 97);
 	}
 
+	
+	
 	public int intToRotorNumber(int index) {
 		int selector;
 		switch (index) {

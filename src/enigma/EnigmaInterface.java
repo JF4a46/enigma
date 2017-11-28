@@ -29,6 +29,8 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 	boolean first = true;
 	int pointeurStr = 0;
 	int limitStr;
+	Font normal = new Font("timesnews", Font.PLAIN, 12);
+	Font special = new Font("timesnews", Font.BOLD, 14);
 
 	public EnigmaInterface() {
 		setUI();
@@ -118,6 +120,22 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 
 	}
 
+	private void resetColor() {
+		for(int i = 0; i < roteurs.length; i++) {
+			for(int j = 0; j < roteurs[i].length; j++) {
+				roteurs[i][j].setFont(normal);
+				roteurs[i][j].setForeground(Color.BLACK);
+			}
+		}
+		for(int i = 0 ; i < alphabet.length; i++) {
+			alphabet[i].setFont(normal);
+			alphabet[i].setForeground(Color.BLACK);
+			reflecteur[i].setFont(normal);
+			reflecteur[i].setForeground(Color.BLACK);
+		}
+		
+	}
+
 	public static void main(String[] args) {
 		EnigmaInterface app = new EnigmaInterface();
 	}
@@ -156,18 +174,32 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 		setDataUI();
 	}
 
-	
 	private void setColor() {
-		
-		
+		int[] path = enig.getPath();
+
+		alphabet[path[0]].setForeground(Color.RED);
+		alphabet[path[0]].setFont(special);
+		roteurs[5][path[1]].setForeground(Color.RED);
+		roteurs[5][path[1]].setFont(special);
+		roteurs[3][path[2]].setForeground(Color.RED);
+		roteurs[3][path[2]].setFont(special);
+		roteurs[1][path[3]].setForeground(Color.RED);
+		roteurs[1][path[3]].setFont(special);
+		reflecteur[path[4]].setForeground(Color.RED);
+		reflecteur[path[4]].setFont(special);
+		roteurs[0][path[5]].setForeground(Color.BLUE);
+		roteurs[0][path[5]].setFont(special);
+		roteurs[2][path[6]].setForeground(Color.BLUE);
+		roteurs[2][path[6]].setFont(special);
+		roteurs[4][path[7]].setForeground(Color.BLUE);
+		roteurs[4][path[7]].setFont(special);
 	}
-	
+
 	private void etapeSuivante() {
 		setDataUI();
-		
+		resetColor();
 		if (first)
 			removeProblems();
-		
 
 		if (encryption) {
 			if (pointeurStr < zoneClaire.getText().length())
@@ -186,7 +218,7 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 		}
 		pointeurStr++;
 		enig.rotorNormalMovement();
-		
+		setColor();
 	}
 
 	private void avertissement() {
