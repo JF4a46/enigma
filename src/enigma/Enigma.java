@@ -6,7 +6,7 @@ public class Enigma {
 
 	private ArrayList<Character> alphabet = new ArrayList<Character>();
 	private int[][] rotors = new int[7][26];
-	private int[] path = new int[8];
+	private int[] path = new int[9];
 	private int[] order = new int[3];
 	// true == right
 	private boolean[] clockwise = new boolean[3];
@@ -32,9 +32,9 @@ public class Enigma {
 
 	public int mod(int num, int mod) {
 		int temp;
-		if (num >= 0)
+		if (num >= 0) {
 			return num % mod;
-		else {
+		} else {
 			temp = num % mod;
 			return temp + mod;
 		}
@@ -70,12 +70,10 @@ public class Enigma {
 		cel = mod(rotors[3][cel] + cel, 26);
 		path[7] = cel;
 		cel = mod(rotors[1][cel] + cel, 26);
-		
+		path[8] = alphabet.indexOf((char) (cel + 97));
 		return "" + (char) (cel + 97);
 	}
 
-	
-	
 	public int intToRotorNumber(int index) {
 		int selector;
 		switch (index) {
@@ -100,11 +98,11 @@ public class Enigma {
 	public void rotorNormalMovement() {
 
 		if (keyInitialized) {
-			if (mouvementCount >= 26) {
+			if (mouvementCount > 25) {
 				mouvementCount = 0;
 				rotorCount++;
 			}
-			if (rotorCount >= 3) {
+			if (rotorCount > 2) {
 				rotorCount = 0;
 			}
 			int rotorNumber = order[rotorCount];
@@ -146,8 +144,8 @@ public class Enigma {
 
 	public void initRotors() {
 
-		int[] wheelOneFirst = { 10, 21, 5, -17, -21, -4, 12, 16, 6, -3, 7, -7, 4, 2, 5, -7, -11, -17, -9, -6, -9, -19,
-				2, -3, -21, -4 };
+		int[] wheelOneFirst = { 10, 21, 5, -17, 21, -4, 12, 16, 6, -3, 7, -7, 4, 2, 5, -7, -11, -17, -9, -6, -9, -19, 2,
+				-3, -21, -4 };
 		int[] wheelOneSecond = { 17, 4, 19, 21, 7, 11, 3, -5, 7, 9, -10, 9, 17, 6, -6, -2, -4, -7, -12, -5, 3, 4, -21,
 				-16, -2, -21 };
 		int[] wheelTwoFirst = { 3, 17, 22, 18, 16, 7, 5, 1, -7, 16, -3, 8, 2, 9, 2, -5, -1, -13, -12, -17, -11, -4, 1,
