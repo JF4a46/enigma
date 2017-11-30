@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -27,6 +28,7 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 	String messageEnc;
 	boolean encryption;
 	boolean first = true;
+	boolean go = false;
 	int pointeurStr = 0;
 	int limitStr;
 	Font normal = new Font("timesnews", Font.PLAIN, 12);
@@ -121,19 +123,19 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 	}
 
 	private void resetColor() {
-		for(int i = 0; i < roteurs.length; i++) {
-			for(int j = 0; j < roteurs[i].length; j++) {
+		for (int i = 0; i < roteurs.length; i++) {
+			for (int j = 0; j < roteurs[i].length; j++) {
 				roteurs[i][j].setFont(normal);
 				roteurs[i][j].setForeground(Color.BLACK);
 			}
 		}
-		for(int i = 0 ; i < alphabet.length; i++) {
+		for (int i = 0; i < alphabet.length; i++) {
 			alphabet[i].setFont(normal);
 			alphabet[i].setForeground(Color.BLACK);
 			reflecteur[i].setFont(normal);
 			reflecteur[i].setForeground(Color.BLACK);
 		}
-		
+
 	}
 
 	public static void main(String[] args) {
@@ -148,13 +150,15 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 		} else if (e.getSource() == interfaces[1]) {
 			encrypt();
 		} else if (e.getSource() == interfaces[2]) {
-			etapeSuivante();
+			if (go)
+				etapeSuivante();
 		} else if (e.getSource() == interfaces[3]) {
 			decrypt();
 		}
 	}
 
 	private void decrypt() {
+
 		mode.setText("Mode : Decrypt");
 		mode.setForeground(Color.GREEN);
 		zoneClaire.setText("");
@@ -162,9 +166,11 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 		encryption = false;
 		pointeurStr = 0;
 		setDataUI();
+
 	}
 
 	private void encrypt() {
+
 		mode.setText("Mode : Encrypt");
 		mode.setForeground(Color.RED);
 		zoneChiffre.setText("");
@@ -172,6 +178,7 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 		encryption = true;
 		pointeurStr = 0;
 		setDataUI();
+
 	}
 
 	private void setColor() {
@@ -222,7 +229,7 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 	}
 
 	private void avertissement() {
-		System.out.println("fin string");
+		JOptionPane.showMessageDialog(null, "Fin message");
 	}
 
 	private void removeProblems() {
@@ -241,21 +248,34 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 		int compteur = 0;
 
 		for (int i = 0; i < cle.length; i += 3) {
-			tabOrder[compteur] = Integer.parseInt(cle[i].getText());
+			try {
+				tabOrder[compteur] = Integer.parseInt(cle[i].getText());
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, "Donnees non compatibles");
+				return;
+			}
 
 			if (cle[i + 1].getText().charAt(0) == 'd' || cle[i + 1].getText().charAt(0) == 'D') {
 				sensD[compteur] = true;
 			} else if (cle[i + 1].getText().charAt(0) == 'g' || cle[i + 1].getText().charAt(0) == 'G') {
 				sensD[compteur] = false;
 			} else {
-				System.err.println("Erreur direction rotation, corriger svp");
+				JOptionPane.showMessageDialog(null, "Erreur direction rotation, corriger svp");
 				return;
 			}
-			initOffset[compteur] = Integer.parseInt(cle[i + 2].getText());
+			try {
+				initOffset[compteur] = Integer.parseInt(cle[i + 2].getText());
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, "Donnees non compatibles");
+				return;
+			}
+
 			compteur++;
 		}
-		if (tabOrder[0] == tabOrder[1] || tabOrder[1] == tabOrder[2] || tabOrder[0] == tabOrder[2])
-			System.err.println("Erreur rotors");
+		if (tabOrder[0] == tabOrder[1] || tabOrder[1] == tabOrder[2] || tabOrder[0] == tabOrder[2]) {
+			JOptionPane.showMessageDialog(null, "Erreur rotors");
+			return;
+		}
 		enig.setOrder(tabOrder);
 		enig.setClockwise(sensD);
 		for (int i = 0; i < initOffset.length; i++) {
@@ -266,6 +286,7 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 				enig.rotateTabLeft(selector, Math.abs(initOffset[i]));
 			}
 		}
+		go = true;
 		setDataUI();
 	}
 }
