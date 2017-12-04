@@ -63,7 +63,7 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 
 		for (int i = 0; i < cle.length; i++) {
 			cle[i] = new JTextField();
-			cle[i].setBounds(340 + i * 50, 400, 30, 25);
+			cle[i].setBounds(340 + i * 53, 400, 30, 25);
 			add(cle[i]);
 		}
 
@@ -78,11 +78,16 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 		etiquettes[4] = new JLabel("Cle");
 		etiquettes[4].setBounds(250, 400, 80, 25);
 		add(etiquettes[4]);
-		zoneClaire.setBounds(100, 450, 300, 100);
+		zoneClaire.setBounds(100, 470, 550, 75);
 		add(zoneClaire);
-		zoneChiffre.setBounds(100, 630, 300, 100);
+		zoneChiffre.setBounds(100, 610, 550, 75);
 		add(zoneChiffre);
-
+		JLabel indic = new JLabel("(                       ),(                       ),(                       )");
+		indic.setBounds(333, 370,600, 80);
+		indic.setFont(new Font("timesnews", Font.BOLD, 22));
+		add(indic);
+		
+		
 		for (int i = 0; i < roteurs.length; i++) {
 			for (int j = 0; j < roteurs[i].length; j++) {
 				roteurs[i][j] = new JTextArea();
@@ -200,6 +205,9 @@ public class EnigmaInterface extends JFrame implements ActionListener {
 		roteurs[2][path[6]].setFont(special);
 		roteurs[4][path[7]].setForeground(Color.BLUE);
 		roteurs[4][path[7]].setFont(special);
+		alphabet[path[8]].setFont(special);
+		alphabet[path[8]].setForeground(Color.BLUE);
+		
 	}
 
 	private void etapeSuivante() {
